@@ -3,7 +3,7 @@
 # Required parameters:
 # @raycast.schemaVersion 1
 # @raycast.title safel-translation
-# @raycast.author 
+# @raycast.author kobakou
 # @raycast.description safel実行
 # @raycast.mode silent
 

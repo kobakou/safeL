@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>safeL - 翻訳</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="top-bar">
+    <div class="top-bar-brand">
+      <h1>safeL</h1>
+      <span class="subtitle">日本語 ⇔ 英語（cursor-agent）</span>
+    </div>
+    <div class="top-bar-controls">
+      <label><input type="radio" name="direction" value="auto" checked> 自動</label>
+      <label><input type="radio" name="direction" value="ja-en"> 日→英</label>
+      <label><input type="radio" name="direction" value="en-ja"> 英→日</label>
+    </div>
+  </header>
+
+  <main>
+    <section class="panels">
+      <div class="panel source">
+        <label for="source">原文</label>
+        <div class="textarea-wrap">
+          <button type="button" class="copy-btn" data-copy-from="source" title="クリップボードにコピー" aria-label="原文をコピー">📋</button>
+          <textarea id="source" placeholder="翻訳するテキストを入力…" rows="8"></textarea>
+        </div>
+      </div>
+      <div class="panel-swap">
+        <button type="button" id="swap" title="原文と訳文を入れ替え（手直し用）">⇄ 入れ替え</button>
+      </div>
+      <div class="panel result">
+        <label for="result">訳文</label>
+        <div class="textarea-wrap">
+          <button type="button" class="copy-btn" data-copy-from="result" title="クリップボードにコピー" aria-label="訳文をコピー">📋</button>
+          <div class="result-wrapper">
+            <textarea id="result" readonly placeholder="訳文がここに表示されます" rows="8" aria-hidden="true"></textarea>
+            <div id="result-diff" class="result-diff-view" aria-label="訳文（差分ハイライト）"></div>
+          </div>
+        </div>
+        <p id="status" class="status"></p>
+      </div>
+      <div class="panel panel-original">
+        <label for="original-source">元原文（比較用）</label>
+        <div class="textarea-wrap">
+          <button type="button" class="copy-btn" data-copy-from="original-source" title="クリップボードにコピー" aria-label="元原文をコピー">📋</button>
+          <textarea id="original-source" readonly placeholder="入れ替え時にここに表示されます" rows="6"></textarea>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/5.1.0/diff.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

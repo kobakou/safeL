@@ -30,10 +30,10 @@ npm start
   - **Script フォルダからリンクで使う**: Raycast の「Script Commands」で「Add Script Directory」しているフォルダ（例: `~/RaycastScripts`）に、safeL のスクリプトへのシンボリックリンクを作る。
     ```bash
     # 例: Raycast の Script フォルダが ~/RaycastScripts の場合
-    ln -s /Users/Kou.Kobayashi/Workspace/src/github.com/kobakou/safeL/scripts/start-and-open.sh ~/RaycastScripts/start-safel.sh
+    ln -s {home}/Workspace/src/github.com/kobakou/safeL/scripts/start-and-open.sh ~/RaycastScripts/start-safel.sh
     ```
     作成後、Raycast で「Script Commands」を開くと `start-safel.sh` が一覧に出る。
-  - **Run Script で直接指定**: 「Run Script」の Script に `bash /Users/Kou.Kobayashi/Workspace/src/github.com/kobakou/safeL/scripts/start-and-open.sh` を指定する。
+  - **Run Script で直接指定**: 「Run Script」の Script に `bash {home}/Workspace/src/github.com/kobakou/safeL/scripts/start-and-open.sh` を指定する。
 - 既にサーバーが動いていればブラウザだけ開き、未起動なら `npm start` してから開く。開く URL は `http://localhost:3000`（`SAFEL_URL` で変更可能）。
 
 ## 環境変数

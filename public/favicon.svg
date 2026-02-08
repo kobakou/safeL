@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
+  <rect width="32" height="32" rx="7" fill="#2563eb"/>
+  <!-- 中央の線 -->
+  <line x1="10" y1="16" x2="22" y2="16" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <!-- 左向き矢印 -->
+  <path d="M14 12 L10 16 L14 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- 右向き矢印 -->
+  <path d="M18 12 L22 16 L18 20" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="public/favicon.svg" width="64" alt="safeL" />
+</p>
+
 # safeL
 
 日本語 ⇔ 英語 の翻訳 Web アプリ（DeepL 風）。バックエンドに **cursor-agent** を利用。動作環境は macOS。

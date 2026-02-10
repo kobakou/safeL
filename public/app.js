@@ -3,6 +3,75 @@ const resultEl = document.getElementById('result');
 const resultDiffEl = document.getElementById('result-diff');
 const originalSourceEl = document.getElementById('original-source');
 const statusEl = document.getElementById('status');
+const sourceBackBtn = document.getElementById('source-back');
+const sourceForwardBtn = document.getElementById('source-forward');
+
+const SOURCE_HISTORY_MAX = 10;
+let sourceHistory = [];
+let sourceHistoryIndex = 0;
+
+function pushSourceToHistory(text) {
+  const t = text.trim();
+  if (!t) return;
+  if (sourceHistory.includes(t)) {
+    // 既存エントリの場合はその位置を現在位置として扱う
+    sourceHistoryIndex = sourceHistory.indexOf(t);
+    updateSourceHistoryButtons();
+    return;
+  }
+  sourceHistory = [t, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
+  sourceHistoryIndex = 0;
+  updateSourceHistoryButtons();
+}
+
+function updateSourceHistoryButtons() {
+  let canGoBack = false;
+  if (sourceHistory.length > 0) {
+    if (sourceHistoryIndex === 0) {
+      // 先頭（最新）にいる → 1件でも「戻る」で空に戻せる
+      canGoBack = true;
+    } else if (sourceHistoryIndex < sourceHistory.length) {
+      // 過去のエントリにいる → さらに古いものがあれば戻れる
+      canGoBack = sourceHistoryIndex < sourceHistory.length - 1;
+    }
+  }
+  sourceBackBtn.disabled = !canGoBack;
+  sourceForwardBtn.disabled = sourceHistoryIndex <= 0;
+}
+
+function sourceHistoryBack() {
+  if (sourceHistory.length === 0) return;
+  // 空状態（index が length と同値）ではこれ以上戻れない
+  if (sourceHistoryIndex >= sourceHistory.length) return;
+  const current = sourceEl.value.trim();
+
+  // テキストが空で index=0 のときは、最新の履歴エントリを表示する
+  // （ユーザーが手動でクリアしたあと「戻る」を押した場合の直感的な挙動）
+  if (!current && sourceHistoryIndex === 0) {
+    sourceEl.value = sourceHistory[0] ?? '';
+    updateSourceHistoryButtons();
+    return;
+  }
+
+  if (sourceHistoryIndex === 0) {
+    if (current && !sourceHistory.includes(current)) {
+      sourceHistory = [current, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
+    }
+    sourceHistoryIndex = 1;
+    sourceEl.value = sourceHistory[1] ?? ''; // 1件のみのときは空（前の状態）
+  } else {
+    sourceHistoryIndex++;
+    sourceEl.value = sourceHistory[sourceHistoryIndex] ?? '';
+  }
+  updateSourceHistoryButtons();
+}
+
+function sourceHistoryForward() {
+  if (sourceHistoryIndex <= 0) return;
+  sourceHistoryIndex--;
+  sourceEl.value = sourceHistory[sourceHistoryIndex] ?? '';
+  updateSourceHistoryButtons();
+}
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -38,8 +107,6 @@ function updateResultDiffView() {
   resultDiffEl.innerHTML = html;
 }
 
-const DEBOUNCE_MS = 400;
-let debounceTimer = null;
 let lastRequestId = 0;
 
 function detectSourceLanguage(text) {
@@ -93,6 +160,9 @@ async function runTranslate() {
     return;
   }
 
+  // 翻訳開始時にヒストリーへ保存
+  pushSourceToHistory(text);
+
   const requestId = ++lastRequestId;
   const { sourceLang, targetLang } = getDirection();
   setStatus('', 'loading');
@@ -109,6 +179,7 @@ async function runTranslate() {
 
     if (!res.ok) {
       setStatus(data.detail || data.error || 'エラー', 'error');
+      updateSourceHistoryButtons();
       return;
     }
     resultEl.value = data.translatedText || '';
@@ -118,20 +189,13 @@ async function runTranslate() {
     if (requestId !== lastRequestId) return;
     setStatus('通信エラー: ' + e.message, 'error');
   }
+  updateSourceHistoryButtons();
 }
 
-function scheduleTranslate() {
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(runTranslate, DEBOUNCE_MS);
-}
+sourceBackBtn.addEventListener('click', sourceHistoryBack);
+sourceForwardBtn.addEventListener('click', sourceHistoryForward);
 
-sourceEl.addEventListener('input', scheduleTranslate);
-
-document.querySelectorAll('input[name="direction"]').forEach((el) => {
-  el.addEventListener('change', () => {
-    if (sourceEl.value.trim()) scheduleTranslate();
-  });
-});
+document.getElementById('translate-btn').addEventListener('click', () => runTranslate());
 
 document.getElementById('swap').addEventListener('click', () => {
   const src = sourceEl.value;
@@ -146,7 +210,6 @@ document.getElementById('swap').addEventListener('click', () => {
     const nextRadio = document.querySelector(`input[name="direction"][value="${next}"]`);
     if (nextRadio) nextRadio.checked = true;
   }
-  if (sourceEl.value.trim()) scheduleTranslate();
 });
 
 originalSourceEl.addEventListener('input', updateResultDiffView);

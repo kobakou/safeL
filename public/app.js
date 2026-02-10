@@ -13,7 +13,12 @@ let sourceHistoryIndex = 0;
 function pushSourceToHistory(text) {
   const t = text.trim();
   if (!t) return;
-  if (sourceHistory.includes(t)) return;
+  if (sourceHistory.includes(t)) {
+    // 既存エントリの場合はその位置を現在位置として扱う
+    sourceHistoryIndex = sourceHistory.indexOf(t);
+    updateSourceHistoryButtons();
+    return;
+  }
   sourceHistory = [t, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
   sourceHistoryIndex = 0;
   updateSourceHistoryButtons();

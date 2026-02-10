@@ -20,16 +20,42 @@ function pushSourceToHistory(text) {
 }
 
 function updateSourceHistoryButtons() {
-  sourceBackBtn.disabled = sourceHistoryIndex >= sourceHistory.length - 1;
+  // Determine whether "back" can be used based on current history state and input.
+  let canGoBack = false;
+  if (sourceHistory.length > 0) {
+    if (sourceHistoryIndex === 0) {
+      if (sourceHistory.length > 1) {
+        // There is an older history entry to go back to.
+        canGoBack = true;
+      } else {
+        // Single history entry: only allow "back" if current text is a new, non-empty value.
+        const current = sourceEl.value.trim();
+        canGoBack = !!current && current !== sourceHistory[0];
+      }
+    } else {
+      // At an older entry: allow "back" while not at the oldest one.
+      canGoBack = sourceHistoryIndex < sourceHistory.length - 1;
+    }
+  }
+  sourceBackBtn.disabled = !canGoBack;
   sourceForwardBtn.disabled = sourceHistoryIndex <= 0;
 }
 
 function sourceHistoryBack() {
-  if (sourceHistory.length === 0 || sourceHistoryIndex >= sourceHistory.length - 1) return;
+  if (sourceHistory.length === 0) return;
+  const current = sourceEl.value.trim();
+  // When there is only one history entry and we're at index 0, only go back
+  // if the current text is a new, non-empty value; otherwise there's nothing meaningful to revert.
+  if (sourceHistoryIndex === 0 && sourceHistory.length === 1) {
+    if (!current || current === sourceHistory[0]) return;
+  }
+  // When already at the oldest entry (index > 0 and at the end), there's no further "back".
+  if (sourceHistoryIndex > 0 && sourceHistoryIndex >= sourceHistory.length - 1) return;
+
   if (sourceHistoryIndex === 0) {
-    const current = sourceEl.value.trim();
-    if (current && current !== sourceHistory[0])
+    if (current && current !== sourceHistory[0]) {
       sourceHistory = [current, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
+    }
     sourceHistoryIndex = 1;
     sourceEl.value = sourceHistory[1] || '';
   } else {

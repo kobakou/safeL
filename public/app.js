@@ -13,7 +13,7 @@ let sourceHistoryIndex = 0;
 function pushSourceToHistory(text) {
   const t = text.trim();
   if (!t) return;
-  if (sourceHistory[0] === t) return;
+  if (sourceHistory.includes(t)) return;
   sourceHistory = [t, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
   sourceHistoryIndex = 0;
   updateSourceHistoryButtons();
@@ -37,7 +37,6 @@ function sourceHistoryBack() {
     sourceEl.value = sourceHistory[sourceHistoryIndex] || '';
   }
   updateSourceHistoryButtons();
-  scheduleTranslate();
 }
 
 function sourceHistoryForward() {
@@ -45,7 +44,6 @@ function sourceHistoryForward() {
   sourceHistoryIndex--;
   sourceEl.value = sourceHistory[sourceHistoryIndex] || '';
   updateSourceHistoryButtons();
-  scheduleTranslate();
 }
 
 function escapeHtml(str) {
@@ -82,8 +80,6 @@ function updateResultDiffView() {
   resultDiffEl.innerHTML = html;
 }
 
-const DEBOUNCE_MS = 400;
-let debounceTimer = null;
 let lastRequestId = 0;
 
 function detectSourceLanguage(text) {
@@ -166,21 +162,10 @@ async function runTranslate() {
   }
 }
 
-function scheduleTranslate() {
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(runTranslate, DEBOUNCE_MS);
-}
-
-sourceEl.addEventListener('input', scheduleTranslate);
-
-document.querySelectorAll('input[name="direction"]').forEach((el) => {
-  el.addEventListener('change', () => {
-    if (sourceEl.value.trim()) scheduleTranslate();
-  });
-});
-
 sourceBackBtn.addEventListener('click', sourceHistoryBack);
 sourceForwardBtn.addEventListener('click', sourceHistoryForward);
+
+document.getElementById('translate-btn').addEventListener('click', () => runTranslate());
 
 document.getElementById('swap').addEventListener('click', () => {
   const src = sourceEl.value;
@@ -195,7 +180,6 @@ document.getElementById('swap').addEventListener('click', () => {
     const nextRadio = document.querySelector(`input[name="direction"][value="${next}"]`);
     if (nextRadio) nextRadio.checked = true;
   }
-  if (sourceEl.value.trim()) scheduleTranslate();
 });
 
 originalSourceEl.addEventListener('input', updateResultDiffView);

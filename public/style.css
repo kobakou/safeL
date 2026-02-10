@@ -59,6 +59,22 @@ body {
 .top-bar-controls input[type="radio"] {
   accent-color: var(--highlight);
 }
+.translate-btn {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: var(--highlight);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+.translate-btn:hover {
+  filter: brightness(1.08);
+}
+.translate-btn:active {
+  filter: brightness(0.95);
+}
 
 main {
   width: 100%;
@@ -106,6 +122,7 @@ main {
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 0.5rem;
   padding-top: 0.5rem;
 }
 #swap {

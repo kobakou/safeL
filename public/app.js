@@ -44,8 +44,17 @@ function sourceHistoryBack() {
   // 空状態（index が length と同値）ではこれ以上戻れない
   if (sourceHistoryIndex >= sourceHistory.length) return;
   const current = sourceEl.value.trim();
+
+  // テキストが空で index=0 のときは、最新の履歴エントリを表示する
+  // （ユーザーが手動でクリアしたあと「戻る」を押した場合の直感的な挙動）
+  if (!current && sourceHistoryIndex === 0) {
+    sourceEl.value = sourceHistory[0] ?? '';
+    updateSourceHistoryButtons();
+    return;
+  }
+
   if (sourceHistoryIndex === 0) {
-    if (current && current !== sourceHistory[0]) {
+    if (current && !sourceHistory.includes(current)) {
       sourceHistory = [current, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
     }
     sourceHistoryIndex = 1;

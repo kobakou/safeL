@@ -137,11 +137,36 @@ main {
   position: relative;
   width: 100%;
 }
+.panel-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+.source-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.history-btn {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  cursor: pointer;
+  opacity: 0.9;
+}
+.history-btn:hover:not(:disabled) {
+  opacity: 1;
+  border-color: var(--highlight);
+}
+.history-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .copy-btn {
-  position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 1;
   padding: 0.25rem 0.5rem;
   font-size: 0.85rem;
   background: var(--surface);

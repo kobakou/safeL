@@ -24,7 +24,11 @@
       <div class="panel source">
         <label for="source">原文</label>
         <div class="textarea-wrap">
-          <button type="button" class="copy-btn" data-copy-from="source" title="クリップボードにコピー" aria-label="原文をコピー">📋</button>
+          <div class="panel-toolbar source-toolbar">
+            <button type="button" id="source-back" class="history-btn" title="戻る" aria-label="原文ヒストリーを戻る" disabled>← 戻る</button>
+            <button type="button" id="source-forward" class="history-btn" title="進む" aria-label="原文ヒストリーを進む" disabled>進む →</button>
+            <button type="button" class="copy-btn" data-copy-from="source" title="クリップボードにコピー" aria-label="原文をコピー">📋</button>
+          </div>
           <textarea id="source" placeholder="翻訳するテキストを入力…" rows="8"></textarea>
         </div>
       </div>
@@ -34,7 +38,9 @@
       <div class="panel result">
         <label for="result">訳文</label>
         <div class="textarea-wrap">
-          <button type="button" class="copy-btn" data-copy-from="result" title="クリップボードにコピー" aria-label="訳文をコピー">📋</button>
+          <div class="panel-toolbar">
+            <button type="button" class="copy-btn" data-copy-from="result" title="クリップボードにコピー" aria-label="訳文をコピー">📋</button>
+          </div>
           <div class="result-wrapper">
             <textarea id="result" readonly placeholder="訳文がここに表示されます" rows="8" aria-hidden="true"></textarea>
             <div id="result-diff" class="result-diff-view" aria-label="訳文（差分ハイライト）"></div>
@@ -45,7 +51,9 @@
       <div class="panel panel-original">
         <label for="original-source">元原文（比較用）</label>
         <div class="textarea-wrap">
-          <button type="button" class="copy-btn" data-copy-from="original-source" title="クリップボードにコピー" aria-label="元原文をコピー">📋</button>
+          <div class="panel-toolbar">
+            <button type="button" class="copy-btn" data-copy-from="original-source" title="クリップボードにコピー" aria-label="元原文をコピー">📋</button>
+          </div>
           <textarea id="original-source" readonly placeholder="入れ替え時にここに表示されます" rows="6"></textarea>
         </div>
       </div>

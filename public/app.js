@@ -3,6 +3,50 @@ const resultEl = document.getElementById('result');
 const resultDiffEl = document.getElementById('result-diff');
 const originalSourceEl = document.getElementById('original-source');
 const statusEl = document.getElementById('status');
+const sourceBackBtn = document.getElementById('source-back');
+const sourceForwardBtn = document.getElementById('source-forward');
+
+const SOURCE_HISTORY_MAX = 10;
+let sourceHistory = [];
+let sourceHistoryIndex = 0;
+
+function pushSourceToHistory(text) {
+  const t = text.trim();
+  if (!t) return;
+  if (sourceHistory[0] === t) return;
+  sourceHistory = [t, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
+  sourceHistoryIndex = 0;
+  updateSourceHistoryButtons();
+}
+
+function updateSourceHistoryButtons() {
+  sourceBackBtn.disabled = sourceHistoryIndex >= sourceHistory.length - 1;
+  sourceForwardBtn.disabled = sourceHistoryIndex <= 0;
+}
+
+function sourceHistoryBack() {
+  if (sourceHistory.length === 0 || sourceHistoryIndex >= sourceHistory.length - 1) return;
+  if (sourceHistoryIndex === 0) {
+    const current = sourceEl.value.trim();
+    if (current && current !== sourceHistory[0])
+      sourceHistory = [current, ...sourceHistory].slice(0, SOURCE_HISTORY_MAX);
+    sourceHistoryIndex = 1;
+    sourceEl.value = sourceHistory[1] || '';
+  } else {
+    sourceHistoryIndex++;
+    sourceEl.value = sourceHistory[sourceHistoryIndex] || '';
+  }
+  updateSourceHistoryButtons();
+  scheduleTranslate();
+}
+
+function sourceHistoryForward() {
+  if (sourceHistoryIndex <= 0) return;
+  sourceHistoryIndex--;
+  sourceEl.value = sourceHistory[sourceHistoryIndex] || '';
+  updateSourceHistoryButtons();
+  scheduleTranslate();
+}
 
 function escapeHtml(str) {
   const div = document.createElement('div');
@@ -93,6 +137,8 @@ async function runTranslate() {
     return;
   }
 
+  pushSourceToHistory(text);
+
   const requestId = ++lastRequestId;
   const { sourceLang, targetLang } = getDirection();
   setStatus('', 'loading');
@@ -132,6 +178,9 @@ document.querySelectorAll('input[name="direction"]').forEach((el) => {
     if (sourceEl.value.trim()) scheduleTranslate();
   });
 });
+
+sourceBackBtn.addEventListener('click', sourceHistoryBack);
+sourceForwardBtn.addEventListener('click', sourceHistoryForward);
 
 document.getElementById('swap').addEventListener('click', () => {
   const src = sourceEl.value;

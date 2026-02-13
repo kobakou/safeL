@@ -97,7 +97,8 @@ main {
 .panels-split-left {
   width: var(--split-pct);
   min-width: 20%;
-  max-width: 80%;
+  /* 左 + 5px + 右min(20%) ≤ 100% にするため、左の上限を 80% - 5px に制限 */
+  max-width: min(80%, calc(100% - 20% - 5px));
   flex-shrink: 0;
   display: flex;
   flex-direction: column;

@@ -22,41 +22,50 @@
 
   <main>
     <section class="panels">
-      <div class="panel source">
-        <label for="source">原文</label>
-        <div class="textarea-wrap">
-          <div class="panel-toolbar source-toolbar">
-            <button type="button" id="source-back" class="history-btn" title="戻る" aria-label="原文ヒストリーを戻る" disabled>← 戻る</button>
-            <button type="button" id="source-forward" class="history-btn" title="進む" aria-label="原文ヒストリーを進む" disabled>進む →</button>
-            <button type="button" class="copy-btn" data-copy-from="source" title="クリップボードにコピー" aria-label="原文をコピー">📋</button>
-          </div>
-          <textarea id="source" placeholder="翻訳するテキストを入力…" rows="8"></textarea>
-        </div>
-      </div>
-      <div class="panel-swap">
-        <button type="button" id="translate-btn" class="translate-btn">翻訳する</button>
-        <button type="button" id="swap" title="原文と訳文を入れ替え（手直し用）">⇄ 入れ替え</button>
-      </div>
-      <div class="panel result">
-        <label for="result">訳文</label>
-        <div class="textarea-wrap">
-          <div class="panel-toolbar">
-            <button type="button" class="copy-btn" data-copy-from="result" title="クリップボードにコピー" aria-label="訳文をコピー">📋</button>
-          </div>
-          <div class="result-wrapper">
-            <textarea id="result" readonly placeholder="訳文がここに表示されます" rows="8" aria-hidden="true"></textarea>
-            <div id="result-diff" class="result-diff-view" aria-label="訳文（差分ハイライト）"></div>
+      <div class="panels-split" id="panels-split">
+        <div class="panels-split-left">
+          <div class="panel source">
+            <label for="source">原文</label>
+            <div class="textarea-wrap">
+              <div class="panel-toolbar source-toolbar">
+                <span class="toolbar-group">
+                  <button type="button" id="source-back" class="history-btn" title="戻る" aria-label="原文ヒストリーを戻る" disabled>←</button>
+                  <button type="button" id="source-forward" class="history-btn" title="進む" aria-label="原文ヒストリーを進む" disabled>→</button>
+                  <button type="button" class="copy-btn" data-copy-from="source" title="クリップボードにコピー" aria-label="原文をコピー">📋</button>
+                </span>
+                <span class="toolbar-group toolbar-actions">
+                  <button type="button" id="translate-btn" class="translate-btn">翻訳する</button>
+                  <button type="button" id="swap" title="原文と訳文を入れ替え（手直し用）">⇄ 入れ替え</button>
+                </span>
+              </div>
+              <textarea id="source" placeholder="翻訳するテキストを入力…" rows="8"></textarea>
+            </div>
           </div>
         </div>
-        <p id="status" class="status"></p>
-      </div>
-      <div class="panel panel-original">
-        <label for="original-source">元原文（比較用）</label>
-        <div class="textarea-wrap">
-          <div class="panel-toolbar">
-            <button type="button" class="copy-btn" data-copy-from="original-source" title="クリップボードにコピー" aria-label="元原文をコピー">📋</button>
+        <div class="resize-handle" id="resize-handle" role="separator" aria-valuenow="50" aria-valuemin="20" aria-valuemax="80" aria-label="左右の幅を変更（1:1付近でスナップ）" title="ドラッグで幅変更・1:1でスナップ"></div>
+        <div class="panels-split-right">
+          <div class="panel result">
+            <label for="result">訳文</label>
+            <div class="textarea-wrap">
+              <div class="panel-toolbar">
+                <button type="button" class="copy-btn" data-copy-from="result" title="クリップボードにコピー" aria-label="訳文をコピー">📋</button>
+              </div>
+              <div class="result-wrapper">
+                <textarea id="result" readonly placeholder="訳文がここに表示されます" rows="8" aria-hidden="true"></textarea>
+                <div id="result-diff" class="result-diff-view" aria-label="訳文（差分ハイライト）"></div>
+              </div>
+            </div>
+            <p id="status" class="status"></p>
           </div>
-          <textarea id="original-source" readonly placeholder="入れ替え時にここに表示されます" rows="6"></textarea>
+          <div class="panel panel-original">
+            <label for="original-source">元原文（比較用）</label>
+            <div class="textarea-wrap">
+              <div class="panel-toolbar">
+                <button type="button" class="copy-btn" data-copy-from="original-source" title="クリップボードにコピー" aria-label="元原文をコピー">📋</button>
+              </div>
+              <textarea id="original-source" readonly placeholder="入れ替え時にここに表示されます" rows="6"></textarea>
+            </div>
+          </div>
         </div>
       </div>
     </section>

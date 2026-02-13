@@ -268,9 +268,6 @@ splitEl.style.setProperty('--split-pct', getStoredSplitPct() + '%');
 resizeHandle?.setAttribute('aria-valuenow', Math.round(getStoredSplitPct()));
 
 if (resizeHandle) {
-  let startX = 0;
-  let startPct = 50;
-
   function onMove(e) {
     if (!splitEl.classList.contains('resizing')) return;
     const rect = splitEl.getBoundingClientRect();
@@ -279,22 +276,28 @@ if (resizeHandle) {
     setSplitPct(snapped);
   }
 
-  function onUp() {
+  function endResize() {
     if (!splitEl.classList.contains('resizing')) return;
     splitEl.classList.remove('resizing');
     document.removeEventListener('mousemove', onMove);
-    document.removeEventListener('mouseup', onUp);
+    document.removeEventListener('mouseup', endResize);
+    window.removeEventListener('blur', endResize);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
     const pct = parseFloat(splitEl.style.getPropertyValue('--split-pct') || '50');
     localStorage.setItem(SPLIT_STORAGE_KEY, String(pct));
+  }
+
+  function onVisibilityChange() {
+    if (document.hidden) endResize();
   }
 
   resizeHandle.addEventListener('mousedown', (e) => {
     if (e.button !== 0) return;
     e.preventDefault();
-    startX = e.clientX;
-    startPct = parseFloat(splitEl.style.getPropertyValue('--split-pct') || '50');
     splitEl.classList.add('resizing');
     document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onUp);
+    document.addEventListener('mouseup', endResize);
+    window.addEventListener('blur', endResize);
+    document.addEventListener('visibilitychange', onVisibilityChange);
   });
 }

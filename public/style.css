@@ -25,8 +25,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 0.4rem 0.75rem;
+  gap: 0.5rem 1rem;
+  padding: 0.3rem 0.75rem;
   border-bottom: 1px solid var(--accent);
   flex-wrap: wrap;
 }
@@ -86,16 +86,78 @@ main {
 }
 
 .panels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto auto;
-  gap: 1rem;
-  align-items: start;
+  width: 100%;
 }
-.panel.source { grid-column: 1; grid-row: 1; }
-.panel.result { grid-column: 2; grid-row: 1; }
-.panel-swap { grid-column: 1; grid-row: 2; }
-.panel.panel-original { grid-column: 2; grid-row: 2; }
+
+.panels-split {
+  display: flex;
+  width: 100%;
+  --split-pct: 50%;
+}
+.panels-split-left {
+  width: var(--split-pct);
+  min-width: 20%;
+  /* 左 + 5px + 右min(20%) ≤ 100% にするため、左の上限を 80% - 5px に制限 */
+  max-width: min(80%, calc(100% - 20% - 5px));
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.panels-split-right {
+  flex: 1;
+  min-width: 20%;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.resize-handle {
+  width: 5px;
+  flex-shrink: 0;
+  cursor: col-resize;
+  background: transparent;
+  position: relative;
+  user-select: none;
+  touch-action: none;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.resize-handle::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 2px;
+  height: 24px;
+  border-radius: 1px;
+  background: rgba(0, 0, 0, 0.12);
+  pointer-events: none;
+  transition: background 0.15s, box-shadow 0.15s;
+}
+.resize-handle:hover::after,
+.resize-handle:active::after {
+  background: rgba(0, 0, 0, 0.24);
+}
+.panels-split.resizing .resize-handle {
+  background: rgba(0, 0, 0, 0.06);
+}
+.panels-split.resizing .resize-handle::after {
+  background: rgba(0, 0, 0, 0.4);
+  width: 2px;
+  height: 28px;
+}
+.resize-handle.snap-zone::after {
+  background: rgba(0, 0, 0, 0.35);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.panels-split.resizing {
+  cursor: col-resize;
+}
+.panels-split.resizing * {
+  cursor: col-resize;
+  user-select: none;
+}
 
 .panel-original {
   border-top: 1px dashed var(--accent);
@@ -108,34 +170,46 @@ main {
 .panel-original textarea {
   min-height: min(35vh, 280px);
   background: #f8f9fc;
-  font-size: 0.95rem;
 }
 
 @media (max-width: 640px) {
-  .panels {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto;
+  .panels-split {
+    flex-direction: column;
+    --split-pct: 100%;
   }
-  .panel.source { grid-column: 1; grid-row: auto; order: 0; }
-  .panel.result { grid-column: 1; grid-row: auto; order: 1; }
-  .panel-swap { grid-column: 1; grid-row: auto; order: 2; }
-  .panel.panel-original { grid-column: 1; grid-row: auto; order: 3; }
+  .panels-split-left {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+  .resize-handle {
+    display: none;
+  }
 }
 
-.panel-swap {
+.source-toolbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: space-between;
   gap: 0.5rem;
-  padding-top: 0.5rem;
+  flex-wrap: wrap;
+}
+.source-toolbar .toolbar-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.source-toolbar .translate-btn {
+  padding: 0.3rem 0.7rem;
+  font-size: 0.85rem;
 }
 #swap {
-  padding: 0.5rem 0.75rem;
+  padding: 0.3rem 0.6rem;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--accent);
   border-radius: var(--radius);
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   cursor: pointer;
   white-space: nowrap;
 }
@@ -163,12 +237,7 @@ main {
   align-items: center;
   justify-content: flex-end;
   gap: 0.25rem;
-  margin-bottom: 0.35rem;
-}
-.source-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
+  margin-bottom: 0.25rem;
 }
 .history-btn {
   padding: 0.25rem 0.5rem;
@@ -201,6 +270,12 @@ main {
   border-color: var(--highlight);
 }
 
+.panel textarea,
+.result-diff-view {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+}
 .panel textarea {
   width: 100%;
   padding: 0.75rem 1rem;
@@ -208,7 +283,6 @@ main {
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
-  font-size: 1rem;
   resize: vertical;
   min-height: min(50vh, 400px);
 }
@@ -238,12 +312,10 @@ main {
   border-radius: var(--radius);
   background: var(--surface);
   color: var(--text);
-  font-size: 1rem;
   min-height: min(50vh, 400px);
   white-space: pre-wrap;
   overflow: auto;
   word-wrap: break-word;
-  font-family: inherit;
 }
 .result-diff-view .diff-add {
   background: #dcfce7;

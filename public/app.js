@@ -233,3 +233,71 @@ document.querySelectorAll('.copy-btn').forEach((btn) => {
     }
   });
 });
+
+// 左右カラム幅リサイズ（1:1でスナップ）
+const SPLIT_STORAGE_KEY = 'safeL-split-pct';
+const SNAP_CENTER = 50;
+const SNAP_THRESHOLD = 4;
+
+const splitEl = document.getElementById('panels-split');
+const resizeHandle = document.getElementById('resize-handle');
+
+function getStoredSplitPct() {
+  const v = localStorage.getItem(SPLIT_STORAGE_KEY);
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 20 && n <= 80 ? n : SNAP_CENTER;
+}
+
+function setSplitPct(pct) {
+  const clamped = Math.max(20, Math.min(80, pct));
+  splitEl.style.setProperty('--split-pct', clamped + '%');
+  resizeHandle?.setAttribute('aria-valuenow', Math.round(clamped));
+  return clamped;
+}
+
+function applySnap(pct) {
+  if (Math.abs(pct - SNAP_CENTER) <= SNAP_THRESHOLD) {
+    resizeHandle?.classList.add('snap-zone');
+    return SNAP_CENTER;
+  }
+  resizeHandle?.classList.remove('snap-zone');
+  return pct;
+}
+
+splitEl.style.setProperty('--split-pct', getStoredSplitPct() + '%');
+resizeHandle?.setAttribute('aria-valuenow', Math.round(getStoredSplitPct()));
+
+if (resizeHandle) {
+  function onMove(e) {
+    if (!splitEl.classList.contains('resizing')) return;
+    const rect = splitEl.getBoundingClientRect();
+    const pct = ((e.clientX - rect.left) / rect.width) * 100;
+    const snapped = applySnap(pct);
+    setSplitPct(snapped);
+  }
+
+  function endResize() {
+    if (!splitEl.classList.contains('resizing')) return;
+    splitEl.classList.remove('resizing');
+    document.removeEventListener('mousemove', onMove);
+    document.removeEventListener('mouseup', endResize);
+    window.removeEventListener('blur', endResize);
+    document.removeEventListener('visibilitychange', onVisibilityChange);
+    const pct = parseFloat(splitEl.style.getPropertyValue('--split-pct') || '50');
+    localStorage.setItem(SPLIT_STORAGE_KEY, String(pct));
+  }
+
+  function onVisibilityChange() {
+    if (document.hidden) endResize();
+  }
+
+  resizeHandle.addEventListener('mousedown', (e) => {
+    if (e.button !== 0) return;
+    e.preventDefault();
+    splitEl.classList.add('resizing');
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', endResize);
+    window.addEventListener('blur', endResize);
+    document.addEventListener('visibilitychange', onVisibilityChange);
+  });
+}

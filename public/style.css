@@ -286,6 +286,10 @@ main {
   resize: vertical;
   min-height: min(50vh, 400px);
 }
+/* Grammarly requires width > 301px; height is already satisfied by .panel textarea */
+.panel.source textarea#source {
+  min-width: 302px;
+}
 .panel textarea::placeholder {
   color: var(--muted);
 }
